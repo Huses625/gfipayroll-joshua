@@ -87,9 +87,11 @@ $result = $conn->query("
     FROM overload_pay op 
     LEFT JOIN employees e ON op.employee_id = e.employee_id
     WHERE e.employment_status = 'full-time'
+    AND e.status = 'active'
     AND op.start_date <= '$filter_end_date' 
     AND op.end_date >= '$filter_start_date'
 ");
+
 
 
 ?>
@@ -191,14 +193,15 @@ include 'header.php';
                     <div class="form-group">
                         <label for="excluded_employees">Exclude Employees</label>
                         <select class="form-control" id="excluded_employees" name="excluded_employees[]" multiple>
-                            <?php
-                            // Fetch all employees
-                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE employment_status = 'full-time'");
+                        <?php
+                            // Fetch all active full-time employees
+                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE employment_status = 'full-time' AND status = 'active'");
 
                             while ($emp = $employees->fetch_assoc()) {
                                 echo "<option value='{$emp['employee_id']}'>{$emp['first_name']} {$emp['last_name']}</option>";
                             }
-                            ?>
+                        ?>
+
                         </select>
                         <small class="form-text text-muted">Hold down the Ctrl (Windows) or Command (Mac) button to select multiple employees.</small>
                     </div>

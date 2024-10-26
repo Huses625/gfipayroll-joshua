@@ -32,12 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['employee_id'], $_POST[
     $stmt->close();
 }
 
-// Fetch all deductions from the database
+// Fetch all deductions for active employees from the database
 $result = $conn->query("
     SELECT od.deduction_id, od.employee_id, od.medical_savings, od.canteen, od.absence_late, od.total_deduction, od.status, od.created_at, e.first_name, e.last_name 
     FROM other_deductions od 
     LEFT JOIN employees e ON od.employee_id = e.employee_id
+    WHERE e.status = 'active'
 ");
+
 
 ?>
 
@@ -122,13 +124,14 @@ include 'header.php';
                     <div class="form-group">
                         <label for="employee_id">Select Employee</label>
                         <select class="form-control" id="employee_id" name="employee_id" required>
-                            <?php
-                            // Fetch all employees
-                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees");
-                            while ($emp = $employees->fetch_assoc()) {
-                                echo "<option value='{$emp['employee_id']}'>{$emp['first_name']} {$emp['last_name']}</option>";
-                            }
-                            ?>
+                        <?php
+                        // Fetch all active employees
+                        $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE status = 'active'");
+                        while ($emp = $employees->fetch_assoc()) {
+                            echo "<option value='{$emp['employee_id']}'>{$emp['first_name']} {$emp['last_name']}</option>";
+                        }
+                        ?>
+
                         </select>
                     </div>
                     <div class="form-group">

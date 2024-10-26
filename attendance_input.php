@@ -56,8 +56,10 @@ $employees_with_attendance = $conn->query("
     SELECT e.employee_id, e.first_name, e.last_name 
     FROM attendance a 
     JOIN employees e ON a.employee_id = e.employee_id 
+    WHERE e.status = 'active'  -- Filter only active employees
     GROUP BY e.employee_id
 ");
+
 
 ?>
 
@@ -136,13 +138,15 @@ include 'header.php';
                     <div class="form-group">
                         <label for="employee_id">Select Employee</label>
                         <select name="employee_id" id="employee_id" class="form-control" required>
-                            <?php
-                            // Fetch all employees
-                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees");
+                        <?php
+                            // Fetch only active employees
+                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE status = 'active'");
+                            
                             while ($row = $employees->fetch_assoc()) {
                                 echo "<option value='{$row['employee_id']}'>{$row['first_name']} {$row['last_name']}</option>";
                             }
-                            ?>
+                        ?>
+
                         </select>
                     </div>
 

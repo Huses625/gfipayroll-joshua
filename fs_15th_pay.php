@@ -28,12 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['employee_id'], $_POST[
     $stmt->close();
 }
 
-// Fetch all F & S 15th pay entries from the database
+// Fetch all F & S 15th pay entries for active employees from the database
 $result = $conn->query("
     SELECT fs.fs_15th_id, fs.employee_id, fs.amount, fs.date, e.first_name, e.last_name 
     FROM fs_15th_pay fs 
     LEFT JOIN employees e ON fs.employee_id = e.employee_id
+    WHERE e.status = 'active'
 ");
+
 
 ?>
 
@@ -107,13 +109,14 @@ include 'header.php';
                     <div class="form-group">
                         <label for="employee_id">Select Employee</label>
                         <select class="form-control" id="employee_id" name="employee_id" required>
-                            <?php
-                            // Fetch all employees
-                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees");
+                        <?php
+                            // Fetch all active employees
+                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE status = 'active'");
                             while ($emp = $employees->fetch_assoc()) {
                                 echo "<option value='{$emp['employee_id']}'>{$emp['first_name']} {$emp['last_name']}</option>";
                             }
-                            ?>
+                        ?>
+
                         </select>
                     </div>
                     <div class="form-group">

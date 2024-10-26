@@ -38,7 +38,7 @@ if (empty($start_date) || empty($end_date)) {
 // Use the user-provided date range or the default payroll cutoff label
 $payroll_cutoff_label = "Payroll Cutoff: " . date("F j, Y", strtotime($start_date)) . " - " . date("F j, Y", strtotime($end_date));
 
-// Query to fetch payroll data based on the date range
+// Query to fetch payroll data based on the date range for active employees
 $query = "
     SELECT e.employee_id, CONCAT(e.first_name, ' ', e.last_name) AS name, 
            SUM(a.regular_hours) AS total_regular_hours, SUM(a.overtime_hours) AS total_overtime_hours, 
@@ -46,9 +46,10 @@ $query = "
     FROM employees e 
     LEFT JOIN attendance a ON e.employee_id = a.employee_id 
     LEFT JOIN daily_rate dr ON e.employee_id = dr.employee_id AND dr.end_date IS NULL
-    WHERE a.date BETWEEN '$start_date' AND '$end_date'
+    WHERE e.status = 'active' AND a.date BETWEEN '$start_date' AND '$end_date'
     GROUP BY e.employee_id
 ";
+
 
 $result = mysqli_query($conn, $query);
 

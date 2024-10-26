@@ -61,13 +61,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && (isset($_POST['daily_rate']) || isse
     }
 }
 
-// Fetch employees and their daily rates, including end_date
+// Fetch only active employees and their daily rates, including end_date
 $employee_rates = $conn->query("
     SELECT e.employee_id, e.first_name, e.last_name, dr.daily_rate, dr.hourly_rate, dr.start_date, dr.end_date
     FROM employees e
     LEFT JOIN daily_rate dr ON e.employee_id = dr.employee_id
+    WHERE e.status = 'active'
     ORDER BY e.first_name
 ");
+
 
 include 'header.php';
 ?>
@@ -159,13 +161,14 @@ include 'header.php';
                     <div class="form-group">
                         <label for="employee_id">Select Employee</label>
                         <select name="employee_id" id="employee_id" class="form-control" required>
-                            <?php
-                            // Fetch all employees
-                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees");
+                        <?php
+                            // Fetch only active employees
+                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE status = 'active'");
                             while ($row = $employees->fetch_assoc()) {
                                 echo "<option value='{$row['employee_id']}'>{$row['first_name']} {$row['last_name']}</option>";
                             }
-                            ?>
+                        ?>
+
                         </select>
                     </div>
 

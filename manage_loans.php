@@ -53,11 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_loan_id'])) {
     $stmt->close();
 }
 
-// Fetch all loans from the database
+// Fetch all loans for active employees from the database
 $result = $conn->query("
     SELECT l.loan_id, l.employee_id, l.loan_amount, l.loan_description, l.loan_terms, l.remaining_balance, l.created_at, e.first_name, e.last_name 
     FROM loans l 
     LEFT JOIN employees e ON l.employee_id = e.employee_id
+    WHERE e.status = 'active'
 ");
 
 
@@ -159,13 +160,14 @@ include 'header.php';
                     <div class="form-group">
                         <label for="employee_id">Select Employee</label>
                         <select class="form-control" id="employee_id" name="employee_id" required>
-                            <?php
-                            // Fetch all employees
-                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees");
+                        <?php
+                            // Fetch all active employees
+                            $employees = $conn->query("SELECT employee_id, first_name, last_name FROM employees WHERE status = 'active'");
                             while ($emp = $employees->fetch_assoc()) {
                                 echo "<option value='{$emp['employee_id']}'>{$emp['first_name']} {$emp['last_name']}</option>";
                             }
-                            ?>
+                        ?>
+
                         </select>
                     </div>
                     <div class="form-group">
